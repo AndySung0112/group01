@@ -62,7 +62,13 @@ class _TeacherExamPageState extends State<TeacherExamPage> {
               itemBuilder: (context, index) {
                 final test = tests[index];
                 return ListTile(
-                  title: Text(test.title),
+                  title: Text(
+                    test.title,
+                    style: TextStyle(
+                        fontWeight: test.isPublished
+                            ? FontWeight.bold
+                            : FontWeight.normal),
+                  ),
                   subtitle: Text("問題數量: ${test.questions.length}"),
                   onTap: () async {
                     await Navigator.push(context, MaterialPageRoute(
@@ -86,6 +92,8 @@ class _TeacherExamPageState extends State<TeacherExamPage> {
                           .add(DeleteExamEvent(test.id, widget.groupId));
                     },
                   ),
+                  //未發佈為灰色 發佈為綠色
+                  tileColor: test.isPublished ? Colors.green : Colors.grey[200],
                 );
               });
         } else if (state is ExamError) {
