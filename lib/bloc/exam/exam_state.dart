@@ -11,19 +11,8 @@ class ExamLoadSuccess extends ExamState {
   ExamLoadSuccess(this.tests);
 }
 
-class ExamLoaded extends ExamState {
-  final List<Test> tests;
-  ExamLoaded(this.tests);
-}
-
 //創建測驗狀態
 class ExamCreateSuccess extends ExamState {}
-
-class ExamSubmissionSuccess extends ExamState {
-  final int score;
-  final List<Question> incorrectQuestions;
-  ExamSubmissionSuccess(this.score, this.incorrectQuestions);
-}
 
 class ExamResultsLoaded extends ExamState {
   final List<StudentResult> results;
@@ -36,12 +25,6 @@ class ExamError extends ExamState {
 }
 
 class ExamDeleteSuccess extends ExamState {}
-
-class ExamQuestionsUpdated extends ExamState {
-  final List<Question> questions;
-
-  ExamQuestionsUpdated(this.questions);
-}
 
 //publish狀態
 class ExamPublishStatusUpdated extends ExamState {
@@ -56,8 +39,43 @@ class UpdateExamSuccess extends ExamState {
   UpdateExamSuccess(this.tests);
 }
 
-//
+//透過測驗ID載入問題
 class LoadExamByIdSuccess extends ExamState {
   final Test test;
   LoadExamByIdSuccess(this.test);
+}
+
+// 紀錄完成與未完成學生
+class ExamCompletionLoaded extends ExamState {
+  final List<String> completedMembers; // 已完成
+  final List<String> incompleteMembers; // 未完成
+
+  ExamCompletionLoaded({
+    required this.completedMembers,
+    required this.incompleteMembers,
+  });
+}
+
+//分辨完成未完成
+class ExamListLoaded extends ExamState {
+  final List<Test> test; // 测验列表
+  final Map<String, bool> completionStatus;
+
+  ExamListLoaded({
+    required this.test,
+    required this.completionStatus,
+  });
+}
+
+//學生開始測驗
+class StudentExamStarted extends ExamState {
+  final Test test;
+  StudentExamStarted({required this.test});
+}
+
+//學生提交測驗
+class StudentExamSubmitted extends ExamState {
+  final int score;
+  Map<int, Answer> studentAnswers;
+  StudentExamSubmitted(this.score, this.studentAnswers);
 }

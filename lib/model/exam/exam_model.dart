@@ -68,9 +68,13 @@ class StudentResult {
 }
 
 class Answer {
-  final String answerText;
-  final bool isCorrect;
-  Answer({required this.answerText, required this.isCorrect});
+  String answerText;
+  bool isCorrect;
+  final DateTime answeredAt;
+
+  Answer(
+      {required this.answerText, this.isCorrect = true, DateTime? answeredAt})
+      : answeredAt = answeredAt ?? DateTime.now();
 }
 
 class Test {
@@ -116,6 +120,64 @@ class Test {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       timeLimit: data['timeLimit'],
       isPublished: data['isPublished'] ?? false,
+    );
+  }
+}
+
+class TestResult {
+  final String testId; //測驗id
+  final String studentId; //學生ID
+  final List<Answer> answers; //學生的答案
+  final int score; //分數
+  final bool isCompleted; //是否完成測驗
+  final DateTime? submissionTime;
+
+  TestResult({
+    required this.testId,
+    required this.studentId,
+    required this.answers,
+    this.score = 0,
+    this.isCompleted = false,
+    this.submissionTime,
+  });
+  //轉換成map上傳firebase
+  Map<String, dynamic> toMap() {
+    return {
+      'testId': testId,
+      'studentId': studentId,
+      // 'answers': answers
+      //     .map((answer) =>
+      //         {'answerText': answer.answerText, 'isCorrect': answer.isCorrect})
+      //     .toList(),
+      'answers': answers
+          .asMap()
+          .entries
+          .map((entry) => {
+                'questionIndex': entry.key,
+                'answerText': entry.value.answerText,
+                'isCorrect': entry.value.isCorrect,
+              })
+          .toList(),
+      'score': score,
+      'isCompleted': isCompleted,
+      'submissionTime': submissionTime?.toIso8601String(),
+    };
+  }
+
+  //從Firebase創建testresult
+  factory TestResult.fromMap(Map<String, dynamic> map) {
+    return TestResult(
+      testId: map['testId'],
+      studentId: map['studentId'],
+      answers: (map['answers'] as List)
+          .map((a) =>
+              Answer(answerText: a['answerText'], isCorrect: a['isCorrect']))
+          .toList(),
+      score: map['score'] ?? 0,
+      isCompleted: map['isCompleted'] ?? false,
+      submissionTime: map['submissionTime'] != null
+          ? DateTime.parse(map['submissionTime'])
+          : null,
     );
   }
 }
